@@ -1,0 +1,195 @@
+!include ..\Parameters.i
+
+[Mesh]
+  type = FileMesh
+  file = ..\Remesh_in.e
+  #uniform_refine =1
+[]
+
+[Variables]
+  [T]
+    family = LAGRANGE
+    order = FIRST
+    initial_condition = ${t_initial}
+  []
+[]
+
+[AuxVariables]
+  [P]
+      family = MONOMIAL
+      order = CONSTANT
+  []
+
+  [wall_heat_flux]
+      family = MONOMIAL
+      order = CONSTANT
+      initial_condition = 0
+  []
+  
+  [T_avg]
+    family = MONOMIAL
+    order = CONSTANT
+    initial_condition = ${room_temperature}
+  []
+[]
+
+[Kernels]
+  [HeatConduction]
+    type = HeatConduction
+    variable = T
+  []
+  # [TimeDerivative]
+  #   type = HeatConductionTimeDerivative
+  #   variable = T
+  # []
+  [HeatSource]
+    type = CoupledForce
+    variable = T
+    v = P
+    block = target
+  []
+[]
+
+# [Materials]
+#   # Thermal conductivity function
+#   [k]
+#     type = ParsedMaterial
+#     expression = 'k0 + a*(T - 300)'
+#     constant_names = 'k0 a'
+#     constant_expressions = '15.0 0.01'
+#     coupled_variables = 'T'
+#     block = 'coil target'
+#     property_name = thermal_conductivity
+#   []
+
+#   # Specific heat function
+#   [c_func]
+#     type = ParsedMaterial
+#     expression = 'c0 + b*T'
+#     constant_names = 'c0 b'
+#     constant_expressions = '500.0 0.2'
+#     coupled_variables = 'T'
+#     block = 'coil target'
+#     property_name = specific_heat
+#   []
+
+#   # Density function
+#   [rho_func]
+#     type = ParsedMaterial
+#     expression = 'rho0*(1 - beta*(T - 300))'
+#     constant_names = 'rho0 beta'
+#     constant_expressions = '7800 1e-4'
+#     coupled_variables = 'T'
+#     block = 'coil target'
+#     property_name = density
+#   []
+# []
+
+[Materials]
+  [steel]
+     type = GenericConstantMaterial
+     prop_names =  'thermal_conductivity   specific_heat     density'
+     prop_values = '${steel_tconductivity} ${steel_capacity} ${steel_density}'
+     block = 'coil target'
+  []
+  [vacuum]
+    type = GenericConstantMaterial
+    prop_names =  'thermal_conductivity    specific_heat      density'
+    prop_values = '${vacuum_tconductivity} ${vacuum_capacity} ${vacuum_density}'
+    block = vacuum_region
+  []
+[]
+
+[BCs]
+  [plane]
+    type = DirichletBC
+    variable = T
+    boundary = 'coil_in coil_out terminal_plane'
+    value = ${room_temperature}
+  []
+  # Use the fluid wall temperature as a matched value boundary condition.
+  [fluid_interface]
+    type = ConvectiveHeatFluxBC
+    variable = T
+    boundary = pipe_inner
+    T_infinity = ${Fluid_Temp}
+    heat_transfer_coefficient = ${HTC}
+  []
+[]
+
+[Postprocessors]
+  [P(total){W}]
+    type = ElementIntegralVariablePostprocessor
+    variable = P
+    block = target
+  []
+  [P(Max){W.m-3}]
+    type = ElementExtremeValue
+    variable = P
+    block = target
+  []
+  [T_avg]
+    type = ElementAverageValue
+    variable = T
+    block = target
+    execute_on = 'initial timestep_begin'
+    force_preaux = true
+    initial_condition = ${room_temperature}
+  []
+  [T(Max){K}]
+    type = NodalExtremeValue
+    variable = T
+    block = target
+  []
+  [Q_surf]
+    type = SideDiffusiveFluxIntegral
+    variable = T
+    boundary = pipe_inner
+    diffusivity = thermal_conductivity
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = NEWTON
+  petsc_options_iname = '-pc_type -ksp_rtol'
+  petsc_options_value = 'hypre    1e-12'
+  start_time = 0.0
+  end_time = ${end_t_th}
+  dt = ${delta_t_th}
+  steady_state_detection = true
+  steady_state_tolerance = 1e-4
+[]
+
+[Outputs]
+  [console]
+    type = Console
+    all_variable_norms     = false
+    outlier_variable_norms = false
+    execute_on = 'FINAL'
+  []
+
+  csv    = true
+
+  [ex]
+    type = Exodus
+  []
+[]
+
+[MultiApps]
+  [AForm]
+    type = FullSolveMultiApp
+    input_files = SubmeshAVFormSolve.i
+    execute_on = initial
+  []
+[]
+
+[Transfers]
+  #transfer the calculated power from the initialisation Aform
+  [pull_power]
+    type = MultiAppMFEMTolibMeshShapeEvaluationTransfer
+    from_multi_app = AForm
+    source_variable = q_field
+    variable = P
+  []
+[]
