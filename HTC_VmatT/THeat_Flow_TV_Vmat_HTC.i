@@ -2,7 +2,7 @@
 
 [Mesh]
   type = FileMesh
-  file = ../Remesh_in.e
+  file = ../Remesh_gen_in.e #../vac_hive.e
   #uniform_refine =1
 []
 
@@ -46,7 +46,7 @@
     type = CoupledForce
     variable = T
     v = P
-    block = target
+    block = monoblock
   []
 []
 
@@ -58,7 +58,7 @@
     constant_names = 'k0 a'
     constant_expressions = '15.0 0.01'
     coupled_variables = 'T'
-    block = 'coil target'
+    block = 'coil monoblock'
     property_name = thermal_conductivity
   []
 
@@ -69,7 +69,7 @@
     constant_names = 'c0 b'
     constant_expressions = '500.0 0.2'
     coupled_variables = 'T'
-    block = 'coil target'
+    block = 'coil monoblock'
     property_name = specific_heat
   []
 
@@ -80,7 +80,7 @@
     constant_names = 'rho0 beta'
     constant_expressions = '7800 1e-4'
     coupled_variables = 'T'
-    block = 'coil target'
+    block = 'coil monoblock'
     property_name = density
   []
 []
@@ -90,7 +90,7 @@
   #   type = GenericFunctionMaterial
   #   prop_names =  'thermal_conductivity   specific_heat     density'
   #   prop_values = 'k_func    c_func      rho_func'
-  #   block = 'coil target'
+  #   block = 'coil monoblock'
   # []
   [vacuum]
     type = GenericConstantMaterial
@@ -104,14 +104,14 @@
   [plane]
     type = DirichletBC
     variable = T
-    boundary = 'coil_in coil_out terminal_plane'
+    boundary = 'voltage-surf-1 voltage-surf-2 terminal_plane'
     value = ${room_temperature}
   []
   # Use the fluid wall temperature as a matched value boundary condition.
   [fluid_interface]
     type = ConvectiveHeatFluxBC
     variable = T
-    boundary = pipe_inner
+    boundary = monoblock_htc #pipe_inner
     T_infinity = ${Fluid_Temp}
     heat_transfer_coefficient = ${HTC}
   []
@@ -121,30 +121,29 @@
   [P(total){W}]
     type = ElementIntegralVariablePostprocessor
     variable = P
-    block = target
+    block = monoblock
   []
   [P(Max){W.m-3}]
     type = ElementExtremeValue
     variable = P
-    block = target
+    block = monoblock
   []
   [T_avg]
     type = ElementAverageValue
     variable = T
-    block = target
-    execute_on = 'initial timestep_begin'
-    force_preaux = true
+    block = monoblock
+    execute_on = 'initial timestep_begin timestep_end'
     initial_condition = ${room_temperature}
   []
   [T(Max){K}]
     type = NodalExtremeValue
     variable = T
-    block = target
+    block = monoblock
   []
   [Q_surf]
     type = SideDiffusiveFluxIntegral
     variable = T
-    boundary = pipe_inner
+    boundary = monoblock_htc #pipe_inner
     diffusivity = thermal_conductivity
   []
   [ThermoC_1]

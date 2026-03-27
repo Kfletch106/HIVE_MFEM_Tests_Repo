@@ -16,7 +16,7 @@ sigma_target = 1e6#6.68e5#1e6
 # Magnetic reluctivity of free space (1/mu0)
 nu0 = '${fparse (1.0e7)/(4*pi)}'
 
-potential_difference = 85 # V testing
+potential_difference = 85 #${fparse 85*(sqrt(2))} # V testing
 coil_current = 2191.97 # A peak-to-peak
 terminal_area = 2.4e-5 # m^2 for vac_oval_coil_solid_target_coarse.e coil
 coil_av_current_density = '${fparse coil_current / terminal_area}'
@@ -29,7 +29,7 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
 
 [Mesh]
   type = MFEMMesh
-  file = ../Remesh_in.e
+  file = ../Remesh_gen_in.e
   #uniform_refine =1
 []
 
@@ -153,7 +153,7 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
     type = MFEMGenericFunctorMaterial
     prop_names = 'massCoef lossCoef sigma nu'
     prop_values = 'mass_coef loss_coef_target ${sigma_target} ${nu0}'
-    block = 'target'
+    block = 'monoblock'
   []
 []
 
@@ -208,31 +208,31 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
 []
 
 [BCs]
-  # active 'coil_voltage_constraint coil_ground exterior_a_field' # Strongly constrain coil voltage
+  #active = 'coil_voltage_constraint coil_ground exterior_a_field' # Strongly constrain coil voltage
   active = 'coil_current_constraint coil_ground exterior_a_field' # Weakly constrain coil current density
   [exterior_a_field]
     type = MFEMComplexVectorTangentialDirichletBC # Enforces J normal to surface, B tangential to surface
     variable = a_field
-    boundary = 'coil_in coil_out terminal_plane exterior1 exterior2 exterior3 exterior4 exterior5'
+    boundary = 'voltage-surf-2 voltage-surf-1 terminal_plane exterior1 exterior2 exterior3 exterior4 exterior5'
   []
   [coil_ground]
     type = MFEMComplexScalarDirichletBC
     variable = coil_electric_potential
-    boundary = 'coil_out'
+    boundary = 'voltage-surf-1'
     coefficient_real = 0.0
     coefficient_imag = 0.0
   []
   [coil_voltage_constraint]
     type = MFEMComplexScalarDirichletBC
     variable = coil_electric_potential
-    boundary = 'coil_in'
+    boundary = 'voltage-surf-2'
     coefficient_real = '${potential_difference}'
     coefficient_imag = 0.0 #no phase-shift
   []  
   [coil_current_constraint]
     type = MFEMComplexIntegratedBC
     variable = coil_electric_potential
-    boundary = 'coil_in'
+    boundary = 'voltage-surf-2'
     [RealComponent]
       type = MFEMBoundaryIntegratedBC
       coefficient = '${coil_av_current_density}'
@@ -251,7 +251,7 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
     [RealComponent]
       type = MFEMCurlCurlKernel
       coefficient = nu
-      block = 'target vacuum_region coil'
+      block = 'monoblock vacuum_region coil'
     []
   []
   [(iωσ-ω²ε)A,A']
@@ -260,12 +260,12 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
     [RealComponent]
       type = MFEMVectorFEMassKernel
       coefficient = massCoef # = -ω²ε
-      block = 'target vacuum_region coil'
+      block = 'monoblock vacuum_region coil'
     []
     [ImagComponent]
       type = MFEMVectorFEMassKernel
       coefficient = lossCoef # = ωσ
-      block = 'target coil'
+      block = 'monoblock coil'
     []
   []
   [(σ+iωε)∇V,A']

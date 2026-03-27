@@ -29,7 +29,7 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
 
 [Mesh]
   type = MFEMMesh
-  file = ../Remesh_in.e
+  file = ../Remesh_gen_in.e #../vac_hive.e
   #uniform_refine =1
 []
 
@@ -153,7 +153,7 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
     type = MFEMGenericFunctorMaterial
     prop_names = 'massCoef lossCoef sigma nu'
     prop_values = 'mass_coef loss_coef_target ${sigma_target} ${nu0}'
-    block = 'target'
+    block = 'monoblock'
   []
 []
 
@@ -251,7 +251,7 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
     [RealComponent]
       type = MFEMCurlCurlKernel
       coefficient = nu
-      block = 'target vacuum_region coil'
+      block = 'monoblock vacuum_region coil'
     []
   []
   [(iωσ-ω²ε)A,A']
@@ -260,12 +260,12 @@ coil_av_current_density = '${fparse coil_current / terminal_area}'
     [RealComponent]
       type = MFEMVectorFEMassKernel
       coefficient = massCoef # = -ω²ε
-      block = 'target vacuum_region coil'
+      block = 'monoblock vacuum_region coil'
     []
     [ImagComponent]
       type = MFEMVectorFEMassKernel
       coefficient = lossCoef # = ωσ
-      block = 'target coil'
+      block = 'monoblock coil'
     []
   []
   [(σ+iωε)∇V,A']

@@ -33,20 +33,6 @@ for file in file_path:
     
     plotter = pv.Plotter(off_screen=True)
     
-    plotter.add_mesh(
-        TargetBlock,
-        scalars="T",
-        show_edges=False,
-        cmap="viridis"
-    )
-    
-    plotter.add_mesh(
-        Points,
-        color="red",
-        point_size=12,
-        render_points_as_spheres=True
-    )
-    
     modified_points = [TargetBlock.points[TargetBlock.find_closest_point(p)] for p in Points]
     pset = pv.PointSet(modified_points)
     
