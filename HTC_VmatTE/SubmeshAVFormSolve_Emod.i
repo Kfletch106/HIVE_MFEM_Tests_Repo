@@ -1,5 +1,6 @@
 # AV-Form frequency-domain solve
 # https://doc.comsol.com/6.1/docserver/#!/com.comsol.help.acdc/acdc_ug_theory.05.51.html
+!include Parameters.i
 
 # AC current frequency
 freq = 1.23476e5 #1e5 # 100 kHz
@@ -11,7 +12,7 @@ epsilon0 = 8.8541878176e-12
 # Conductivities
 sigma_coil = 3.3e7 #3.3e7#5.96e7 # S/m # Econd0 / (1 + alpha(T-T0))
 sigma_vac = 0.0
-sigma_target = 1.29e6*(1/(1 + )) #6.68e5#6.68e5#1e6
+#sigma_target = 1.29e6*(1/(1 + )) #6.68e5#6.68e5#1e6
 
 # Magnetic reluctivity of free space (1/mu0)
 nu0 = '${fparse (1.0e7)/(4*pi)}'
@@ -20,13 +21,6 @@ potential_difference = 85 # V testing
 coil_current = 2191.97 # A peak-to-peak
 terminal_area = 2.4e-5 # m^2 for vac_oval_coil_solid_target_coarse.e coil
 coil_av_current_density = '${fparse coil_current / terminal_area}'
-
-# coil_in = 'coil_in'
-# coil_out = 'coil_out'
-# target = 'target'
-# pipe_inner = 'pipe_inner'
-# mesh = ../Remesh_in.e
-# insulation = 'terminal_plane exterior1 exterior2 exterior3 exterior4 exterior5
 
 coil_in = 'voltage-surf-2'
 coil_out = 'voltage-surf-1'
@@ -124,6 +118,10 @@ insulation = 'magnetic_insulation'
     type = MFEMVariable
     fespace = L2FESpace
   []
+  [T]
+    type = MFEMVariable
+    fespace = L2FESpace
+  []
 []
 
 [Functions]
@@ -142,11 +140,20 @@ insulation = 'magnetic_insulation'
   []
   [loss_coef_target]
     type = ParsedFunction
-    expression = ${angfreq}*${sigma_target}
+    expression = 1 #'angfreq*sigma_target'
+    #symbol_names = 'angfreq sigma_target'
+    #symbols_values = '${angfreq} sigma_target'
   []
   [sigma_coil]
     type = ParsedFunction
     expression = ${sigma_coil}
+  []
+  [sigma_target]
+    type = MFEMParsedFunction
+    #expression = '${steel_econductivity_0}'
+    expression = 'Econd0 / (1 + alpha*(T - T0))'
+    symbol_names = 'Econd0 alpha T T0'
+    symbols_values = '${steel_econductivity_0} ${steel_econd_alpha} T ${room_temperature}'
   []
 []
 
@@ -166,7 +173,7 @@ insulation = 'magnetic_insulation'
   [target]
     type = MFEMGenericFunctorMaterial
     prop_names = 'massCoef lossCoef sigma nu'
-    prop_values = 'mass_coef loss_coef_target ${sigma_target} ${nu0}'
+    prop_values = 'mass_coef loss_coef_target sigma_target ${nu0}'
     block = ${target}
   []
 []

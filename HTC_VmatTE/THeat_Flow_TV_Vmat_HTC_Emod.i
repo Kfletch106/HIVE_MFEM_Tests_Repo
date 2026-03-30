@@ -113,7 +113,7 @@
     variable = T
     boundary = monoblock_htc #pipe_inner
     T_infinity = ${Fluid_Temp}
-    heat_transfer_coefficient = ${HTC}
+    heat_transfer_coefficient = ${HTC_block}
   []
 []
 
@@ -240,5 +240,11 @@
     from_multi_app = AForm
     source_variable = q_field
     variable = P
+  []
+  [Temp_to_MFEM]
+    type = MultiApplibMeshToMFEMShapeEvaluationTransfer
+    to_multi_app = AForm
+    source_variable = T
+    variable = T
   []
 []
