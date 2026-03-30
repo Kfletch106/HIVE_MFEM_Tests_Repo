@@ -2,7 +2,7 @@
   # Load the mesh
   [input_mesh]
     type = FileMeshGenerator
-    file = vac_hive.e
+    file = vac_hive_new.e
     #refine = 1
   []
 

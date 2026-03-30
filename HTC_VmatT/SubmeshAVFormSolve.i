@@ -2,7 +2,7 @@
 # https://doc.comsol.com/6.1/docserver/#!/com.comsol.help.acdc/acdc_ug_theory.05.51.html
 
 # AC current frequency
-freq = 1.23476e5 #1e5 # 100 kHz
+freq = 1.23476e5#1e5 # 100 kHz
 angfreq = '${fparse 2.0*pi*freq}'
 
 # Permittivity of free space
@@ -11,7 +11,7 @@ epsilon0 = 8.8541878176e-12
 # Conductivities
 sigma_coil = 5.96e7 #3.3e7#5.96e7 # S/m
 sigma_vac = 0.0
-sigma_target = 1e6#6.68e5#1e6
+sigma_target = 1e6 #6.68e5#1e6
 
 # Magnetic reluctivity of free space (1/mu0)
 nu0 = '${fparse (1.0e7)/(4*pi)}'

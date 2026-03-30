@@ -9,6 +9,7 @@ copper_permeability  = ${fparse vacuum_permeability}          # H/m
 copper_reluctivity   = ${fparse 1/copper_permeability}        # (H/m)^-1
 copper_econductivity = 5.96e7                                 # S/m
 copper_econductivity_0 = 5.96e7                                 # S/m
+copper_econd_alpha = 0.0039
 copper_tconductivity = 400.59                                 # W/(m*K)
 copper_density       = 8.94e3                                 # kg/m^3
 copper_capacity      = 388.29                                 # J/(kg*K)
@@ -18,6 +19,7 @@ steel_reluctivity    = ${fparse 1/steel_permeability}         # (H/m)^-1
 steel_reluctivity_0    = ${fparse 1/steel_permeability}         # (H/m)^-1
 steel_econductivity  = 1.29e6                                 # S/m
 steel_econductivity_0  = 1.29e6                                 # S/m
+steel_econd_alpha = 0.006
 steel_tconductivity  = 14.28                                  # W/(m*K)
 steel_density        = 8.00e3                                # kg/m^3
 steel_capacity       = 472.40                                 # J/(kg*K)
@@ -43,7 +45,7 @@ end_t_th             = 60                                     # s
 
 visualization        = true
 
-Re = ${fparse 919.131*7.36*0.012/0.00018551566535600087}
-Pr = 1.170613923301386
-Nu = ${fparse 0.023*pow(Re,0.8)*pow(Pr,0.4)}
-HTC = ${fparse Nu*0.6062696884457435/0.012}
+Re_block = ${fparse 919.131*7.36*0.012/0.00018551566535600087}
+Pr_block = 1.170613923301386
+Nu_block = ${fparse 0.023*pow(Re_block,0.8)*pow(Pr_block,0.4)}
+HTC_block = ${fparse Nu_block*0.6062696884457435/0.012}

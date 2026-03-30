@@ -9,8 +9,7 @@ angfreq = '${fparse 2.0*pi*freq}'
 epsilon0 = 8.8541878176e-12
 
 # Conductivities
-T_avg = 450
-sigma_coil = 3.3e7 #3.3e7#5.96e7 # S/m
+sigma_coil = 3.3e7 #3.3e7#5.96e7 # S/m # Econd0 / (1 + alpha(T-T0))
 sigma_vac = 0.0
 sigma_target = 1.29e6*(1/(1 + )) #6.68e5#6.68e5#1e6
 

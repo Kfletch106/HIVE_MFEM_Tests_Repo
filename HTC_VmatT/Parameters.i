@@ -43,7 +43,8 @@ end_t_th             = 60                                     # s
 
 visualization        = true
 
-Re = ${fparse 919.131*7.36*0.012/0.00018551566535600087}
+Flow_Rate = 7.6 #m/s
+Re = ${fparse 919.131*Flow_Rate*0.012/0.00018551566535600087}
 Pr = 1.170613923301386
 Nu = ${fparse 0.023*pow(Re,0.8)*pow(Pr,0.4)}
 HTC = ${fparse Nu*0.6062696884457435/0.012}

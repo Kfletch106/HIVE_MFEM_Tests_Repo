@@ -1,6 +1,8 @@
 # AV-Form frequency-domain solve
 # https://doc.comsol.com/6.1/docserver/#!/com.comsol.help.acdc/acdc_ug_theory.05.51.html
 
+!include Parameters.i
+
 # AC current frequency
 freq = 1.23476e5 #1e5 # 100 kHz
 angfreq = '${fparse 2.0*pi*freq}'
@@ -17,7 +19,7 @@ sigma_target = 1e6#6.68e5#1e6
 nu0 = '${fparse (1.0e7)/(4*pi)}'
 
 potential_difference = 85 # V testing
-coil_current = 2191.97 # A peak-to-peak
+#coil_current = 2191.97 # A peak-to-peak
 terminal_area = 2.4e-5 # m^2 for vac_oval_coil_solid_target_coarse.e coil
 coil_av_current_density = '${fparse coil_current / terminal_area}'
 
