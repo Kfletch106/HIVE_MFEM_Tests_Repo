@@ -2,7 +2,7 @@
 
 [Mesh]
   type = FileMesh
-  file = ../Remesh_gen_in.e #../vac_hive.e
+  file = ../vac_hive.e
   #uniform_refine =1
 []
 
@@ -25,7 +25,7 @@
       order = CONSTANT
       initial_condition = 0
   []
-  
+
   [T_avg]
     family = MONOMIAL
     order = CONSTANT
@@ -101,12 +101,12 @@
 []
 
 [BCs]
-  [plane]
-    type = DirichletBC
-    variable = T
-    boundary = 'voltage-surf-1 voltage-surf-2 terminal_plane'
-    value = ${room_temperature}
-  []
+  # [plane]
+  #   type = DirichletBC
+  #   variable = T
+  #   boundary = 'voltage-surf-1 voltage-surf-2 terminal_plane'
+  #   value = ${room_temperature}
+  # []
   # Use the fluid wall temperature as a matched value boundary condition.
   [fluid_interface]
     type = ConvectiveHeatFluxBC

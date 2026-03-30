@@ -2,7 +2,7 @@
 
 [Mesh]
   type = FileMesh
-  file = ../Remesh_gen_in.e #../vac_hive.e
+  file = ../vac_hive.e
   #uniform_refine =1
 []
 
@@ -25,7 +25,7 @@
       order = CONSTANT
       initial_condition = 0
   []
-  
+
   [T_avg]
     family = MONOMIAL
     order = CONSTANT
@@ -101,17 +101,17 @@
 []
 
 [BCs]
-  [plane]
-    type = DirichletBC
-    variable = T
-    boundary = 'coil_in coil_out terminal_plane'
-    value = ${room_temperature}
-  []
+  # [plane]
+  #   type = DirichletBC
+  #   variable = T
+  #   boundary = 'voltage-surf-1 voltage-surf-2 terminal_plane'
+  #   value = ${room_temperature}
+  # []
   # Use the fluid wall temperature as a matched value boundary condition.
   [fluid_interface]
     type = ConvectiveHeatFluxBC
     variable = T
-    boundary = pipe_inner
+    boundary = monoblock_htc #pipe_inner
     T_infinity = ${Fluid_Temp}
     heat_transfer_coefficient = ${HTC}
   []
@@ -132,8 +132,7 @@
     type = ElementAverageValue
     variable = T
     block = monoblock
-    execute_on = 'initial timestep_begin'
-    force_preaux = true
+    execute_on = 'initial timestep_begin timestep_end'
     initial_condition = ${room_temperature}
   []
   [T(Max){K}]
@@ -144,7 +143,7 @@
   [Q_surf]
     type = SideDiffusiveFluxIntegral
     variable = T
-    boundary = pipe_inner
+    boundary = monoblock_htc #pipe_inner
     diffusivity = thermal_conductivity
   []
   [ThermoC_1]

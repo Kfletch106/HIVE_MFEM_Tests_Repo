@@ -3,8 +3,10 @@ import numpy as np
 import pyvista as pv
 import vtk
 
+import matplotlib.pyplot as plt
+
 # Path to your Exodus file
-file_path = r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim\HIVE\HIVE_MFEM_Repo\HTC_VmatT\THeat_Flow_TV_Vmat_HTC_ex.e"  # Replace with your actual file path
+file_path = "THeat_Flow_TV_Vmat_HTC_ex.e"  # Replace with your actual file path
 
 # reader = pv.get_reader(file_path)
 # reader.set_active_time_value(reader.time_values[-1])
@@ -14,7 +16,7 @@ file_path = r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim
 # print("Available block names:")
 # for name in Dataset.keys():
 #     print(f" - {name}")
-    
+
 # mesh = Dataset["Node Sets"]
 # mesh.plot(show_edges=True)
 # print(mesh)
@@ -24,7 +26,7 @@ file_path = r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim
 ExoRead = pv.get_reader(file_path)
 ExoRead.set_active_time_point(ExoRead.number_time_points-1)
 
-TargetBlock = ExoRead.read()["Element Blocks"]["target"]
+TargetBlock = ExoRead.read()["Element Blocks"]["monoblock"]
 
 T_target = TargetBlock.point_data["T"]
 
@@ -46,6 +48,24 @@ pset = pset.sample(TargetBlock, snap_to_closest_point=True)
 
 print(pset['T'])
 
+fig, ax = plt.subplots()
+index = np.arange(len(pset['T']))
+
+exp_data = [675.14,	489.81,	582.48,	480.46,	448.44,	608.38,	655.11,	461.47,	544.66,	470.33]
+TC = [f"TC{i}" for i in range(10)]
+bar_width = 0.35
+
+ax.bar(index, exp_data, bar_width, label="Experiment")
+ax.bar(index+bar_width, pset['T'], bar_width, label="MFEM")
+ax.set_xticks(index + bar_width / 2)
+ax.set_xticklabels(TC)
+ax.set_ylabel("Temperature (K)")
+ax.set_xlabel("Thermocouples")
+ax.set_ylim(bottom=425)
+ax.legend()
+
+fig.savefig("Results.png")
+plt.show()
 
 plotter = pv.Plotter(off_screen=True)
 
@@ -53,7 +73,7 @@ plotter.add_mesh(
     TargetBlock,
     scalars="T",
     show_edges=False,
-    cmap="viridis"
+    cmap="jet"
 )
 
 plotter.add_mesh(
