@@ -14,6 +14,10 @@
   []
 []
 
+[Problem]
+  verbose_multiapps = true
+[]
+
 [AuxVariables]
   [P]
       family = MONOMIAL
@@ -133,7 +137,6 @@
     variable = T
     block = monoblock
     execute_on = 'initial timestep_begin timestep_end'
-    initial_condition = ${room_temperature}
   []
   [T(Max){K}]
     type = NodalExtremeValue
@@ -199,25 +202,22 @@
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = NEWTON
   petsc_options_iname = '-pc_type -ksp_rtol'
   petsc_options_value = 'hypre    1e-12'
   start_time = 0.0
+  nl_abs_tol=1e-8
+  l_abs_tol = 1e-8
   end_time = ${end_t_th}
   dt = ${delta_t_th}
   steady_state_detection = true
-  steady_state_tolerance = 1e-4
+  steady_state_tolerance = 1e-6
+  line_search = none
+  automatic_scaling=true
 []
 
 [Outputs]
-  [console]
-    type = Console
-    all_variable_norms     = false
-    outlier_variable_norms = false
-    execute_on = 'FINAL'
-  []
-
   csv    = true
 
   [ex]
@@ -229,7 +229,7 @@
   [AForm]
     type = FullSolveMultiApp
     input_files = SubmeshAVFormSolve_Emod.i
-    execute_on = initial
+    execute_on = timestep_begin
   []
 []
 
@@ -245,6 +245,7 @@
     type = MultiApplibMeshToMFEMShapeEvaluationTransfer
     to_multi_app = AForm
     source_variable = T
-    variable = T
+    variable = temp
+    execute_on = 'initial timestep_begin'
   []
 []

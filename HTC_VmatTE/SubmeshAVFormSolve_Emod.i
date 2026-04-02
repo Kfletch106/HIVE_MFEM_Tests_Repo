@@ -12,12 +12,12 @@ epsilon0 = 8.8541878176e-12
 # Conductivities
 sigma_coil = 3.3e7 #3.3e7#5.96e7 # S/m # Econd0 / (1 + alpha(T-T0))
 sigma_vac = 0.0
-#sigma_target = 1.29e6*(1/(1 + )) #6.68e5#6.68e5#1e6
+sigma_target = 6.68e5#6.68e5#1e6
 
 # Magnetic reluctivity of free space (1/mu0)
 nu0 = '${fparse (1.0e7)/(4*pi)}'
 
-potential_difference = 85 # V testing
+potential_difference = ${fparse 85*sqrt(2)} # V testing
 coil_current = 2191.97 # A peak-to-peak
 terminal_area = 2.4e-5 # m^2 for vac_oval_coil_solid_target_coarse.e coil
 coil_av_current_density = '${fparse coil_current / terminal_area}'
@@ -118,7 +118,11 @@ insulation = 'magnetic_insulation'
     type = MFEMVariable
     fespace = L2FESpace
   []
-  [T]
+  [temp]
+    type = MFEMVariable
+    fespace = L2FESpace
+  []
+  [econd_target]
     type = MFEMVariable
     fespace = L2FESpace
   []
@@ -139,10 +143,10 @@ insulation = 'magnetic_insulation'
     expression = ${angfreq}*${sigma_coil}
   []
   [loss_coef_target]
-    type = ParsedFunction
-    expression = 1 #'angfreq*sigma_target'
-    #symbol_names = 'angfreq sigma_target'
-    #symbols_values = '${angfreq} sigma_target'
+    type = MFEMParsedFunction
+    expression = '${angfreq}*sigma_target'
+    symbol_names = 'sigma_target'
+    symbol_values = 'sigma_target'
   []
   [sigma_coil]
     type = ParsedFunction
@@ -151,9 +155,9 @@ insulation = 'magnetic_insulation'
   [sigma_target]
     type = MFEMParsedFunction
     #expression = '${steel_econductivity_0}'
-    expression = 'Econd0 / (1 + alpha*(T - T0))'
+    expression = 'Econd0/ (1 + alpha*(T - T0))'
     symbol_names = 'Econd0 alpha T T0'
-    symbols_values = '${steel_econductivity_0} ${steel_econd_alpha} T ${room_temperature}'
+    symbol_values = '${steel_econductivity_0} ${steel_econd_alpha} temp ${room_temperature}'
   []
 []
 
@@ -173,8 +177,9 @@ insulation = 'magnetic_insulation'
   [target]
     type = MFEMGenericFunctorMaterial
     prop_names = 'massCoef lossCoef sigma nu'
-    prop_values = 'mass_coef loss_coef_target sigma_target ${nu0}'
+    prop_values = 'mass_coef loss_coef_target econd_target ${nu0}'
     block = ${target}
+    execute_on = 'initial timestep_begin timestep_end'
   []
 []
 
@@ -225,6 +230,20 @@ insulation = 'magnetic_insulation'
     scale_factors = '0.5 0.5'
     execute_on = TIMESTEP_END
     execution_order_group = 5
+  []
+  [econd_target]
+    type = MFEMScalarProjectionAux
+    variable = econd_target
+    coefficient = sigma_target
+    execute_on = 'timestep_begin timestep_end'
+  []
+[]
+
+[ICs]
+  [temp]
+    type = MFEMScalarIC
+    coefficient = 450
+    variable = temp
   []
 []
 

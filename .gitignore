@@ -4,3 +4,5 @@
 *.pvtu
 *.so
 *.json
+*.cc
+*_cp

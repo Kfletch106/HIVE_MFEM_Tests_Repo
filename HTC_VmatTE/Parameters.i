@@ -28,7 +28,7 @@ steel_density_0        = 8.00e3                                 # kg/m^3
 steel_capacity_0       = 472.40                                 # J/(kg*K)
 
 room_temperature     = 293.15                                 # K
-t_initial            = 423.15                                 # K
+t_initial            = 450                                    # K
 Fluid_Temp           = 423.15
 
 voltage_amplitude    = 0.2998340                              # V
@@ -40,7 +40,7 @@ delta_t_af           = ${fparse voltage_period/50}            # s
 skip_t_af            = ${fparse voltage_period}               # s
 end_t_af             = ${fparse voltage_period*2}             # s
 
-delta_t_th           = 0.05#0.5                                      # s
+delta_t_th           = 10.#0.5                                      # s
 end_t_th             = 60                                     # s
 
 visualization        = true
