@@ -41,7 +41,7 @@ skip_t_af            = ${fparse voltage_period}               # s
 end_t_af             = ${fparse voltage_period*2}             # s
 
 delta_t_th           = 10.#0.5                                      # s
-end_t_th             = 60                                     # s
+end_t_th             = 200                                     # s
 
 visualization        = true
 
