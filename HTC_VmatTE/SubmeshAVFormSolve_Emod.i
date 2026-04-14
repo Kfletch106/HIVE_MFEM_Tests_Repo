@@ -144,9 +144,9 @@ insulation = 'magnetic_insulation'
   []
   [loss_coef_target]
     type = MFEMParsedFunction
-    expression = '${angfreq}*sigma_target'
-    symbol_names = 'sigma_target'
-    symbol_values = 'sigma_target'
+    expression = 'angfreq*sigma_target'
+    symbol_names = 'angfreq sigma_target'
+    symbol_values = '${angfreq} sigma_target'
   []
   [sigma_coil]
     type = ParsedFunction
@@ -157,7 +157,7 @@ insulation = 'magnetic_insulation'
     #expression = '${steel_econductivity_0}'
     expression = 'Econd0/ (1 + alpha*(T - T0))'
     symbol_names = 'Econd0 alpha T T0'
-    symbol_values = '${steel_econductivity_0} ${steel_econd_alpha} temp ${room_temperature}'
+    symbol_values = '${steel_econductivity_0} ${steel_econd_alpha} T ${room_temperature}'
   []
 []
 

@@ -229,7 +229,7 @@
   [AForm]
     type = FullSolveMultiApp
     input_files = SubmeshAVFormSolve_Emod.i
-    execute_on = timestep_begin
+    execute_on = 'initial timestep_end'
   []
 []
 

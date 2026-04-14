@@ -6,8 +6,8 @@ import csv
 
 # Path to your Exodus file
 file_path = []
-file_path.append(r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim\HIVE\HIVE_MFEM_Repo\Baseline_HTC\THeat_Flow_TV_HTC_ex.e")  # Replace with your actual file path
-file_path.append(r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim\HIVE\HIVE_MFEM_Repo\HTC_VmatT\THeat_Flow_TV_Vmat_HTC_ex.e")
+#file_path.append(r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim\HIVE\HIVE_MFEM_Repo\Baseline_HTC\THeat_Flow_TV_HTC_ex.e")  # Replace with your actual file path
+#file_path.append(r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim\HIVE\HIVE_MFEM_Repo\HTC_VmatT\THeat_Flow_TV_Vmat_HTC_ex.e")
 file_path.append(r"\\wsl.localhost\Ubuntu-22.04\home\kfletch123\GeneralFolder\HIVEsim\HIVE\HIVE_MFEM_Repo\HTC_VmatTE\THeat_Flow_TV_Vmat_HTC_Emod_ex.e")
 
 all_thermocouples = []
@@ -16,7 +16,7 @@ for file in file_path:
     ExoRead = pv.get_reader(file)
     ExoRead.set_active_time_point(ExoRead.number_time_points-1)
     
-    TargetBlock = ExoRead.read()["Element Blocks"]["target"]
+    TargetBlock = ExoRead.read()["Element Blocks"]["monoblock"]
     
     T_target = TargetBlock.point_data["T"]
     

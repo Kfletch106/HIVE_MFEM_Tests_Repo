@@ -1,4 +1,4 @@
-coil_current      = 1873.101789246194
+coil_current      = 2246.30005833453
 
 Flow_Rate = 7.6 #m/s
 
